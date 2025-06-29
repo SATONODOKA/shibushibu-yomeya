@@ -30,9 +30,10 @@ exports.handler = async (event, context) => {
 
   try {
     const params = new URLSearchParams({
-      q: 'AI',
+      q: '(AI OR "人工知能" OR "機械学習" OR "ChatGPT" OR "OpenAI" OR "Gemini" OR "Claude") AND -sport AND -music AND -game',
       sortBy: 'publishedAt',
-      pageSize: '10',
+      pageSize: '15',
+      language: 'en',
       apiKey: API_KEY
     });
 
@@ -44,13 +45,32 @@ exports.handler = async (event, context) => {
 
     const data = await response.json();
     
+    console.log('NewsAPI Status:', data.status);
+    console.log('Total Results:', data.totalResults);
+    console.log('Articles Count:', data.articles?.length);
+    
+    // AI関連キーワードでさらにフィルタリング
+    const aiKeywords = ['AI', '人工知能', 'ChatGPT', 'OpenAI', 'Google', 'Microsoft', 'Meta', '機械学習', 'ディープラーニング', 'Claude', 'Gemini', 'GPT', 'LLM', 'neural', 'algorithm'];
+    
     const articles = data.articles
-      .filter(article => article.title && article.url)
+      .filter(article => {
+        if (!article.title || !article.url) return false;
+        
+        // タイトル + 説明文でAI関連キーワードをチェック
+        const text = (article.title + ' ' + (article.description || '')).toLowerCase();
+        return aiKeywords.some(keyword => text.includes(keyword.toLowerCase()));
+      })
       .slice(0, 5)
       .map(article => ({
         title: article.title,
         url: article.url,
-        publishedAt: article.publishedAt
+        publishedAt: article.publishedAt,
+        description: article.description || '',
+        source: article.source?.name || '',
+        debugInfo: {
+          originalDate: article.publishedAt,
+          hoursAgo: Math.floor((new Date() - new Date(article.publishedAt)) / (1000 * 60 * 60))
+        }
       }));
 
     return {

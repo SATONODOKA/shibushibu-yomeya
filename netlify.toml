@@ -6,6 +6,16 @@
   directory = "netlify/functions"
 
 [[redirects]]
+  from = "/api/news"
+  to = "/.netlify/functions/news"
+  status = 200
+
+[[redirects]]
+  from = "/api/news-alternative"
+  to = "/.netlify/functions/news-alternative"
+  status = 200
+
+[[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200

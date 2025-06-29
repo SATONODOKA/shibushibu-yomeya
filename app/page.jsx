@@ -5,9 +5,10 @@ import { useState, useEffect } from 'react';
 export default function Home() {
   const [articles, setArticles] = useState([]);
 
-  const fetchNews = async () => {
+  const fetchNews = async (useAlternative = false) => {
     try {
-      const response = await fetch('/api/news');
+      const apiUrl = useAlternative ? '/api/news-alternative' : '/api/news';
+      const response = await fetch(apiUrl);
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
@@ -17,6 +18,15 @@ export default function Home() {
       
       if (data.success && data.articles) {
         setArticles(data.articles);
+        console.log('API使用:', data.apiUsed || 'NewsAPI');
+        console.log('取得記事数:', data.articles.length);
+        
+        // デバッグ情報をコンソール出力
+        data.articles.forEach((article, index) => {
+          if (article.debugInfo) {
+            console.log(`記事${index + 1}: ${article.debugInfo.hoursAgo}時間前の記事`);
+          }
+        });
       } else {
         console.error('API Error:', data.error);
         setArticles([]);
@@ -35,19 +45,34 @@ export default function Home() {
     <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <h1>AI最新ニュース</h1>
-        <button 
-          onClick={fetchNews}
-          style={{ 
-            backgroundColor: '#0066cc', 
-            color: 'white', 
-            padding: '10px 20px', 
-            border: 'none', 
-            borderRadius: '5px',
-            cursor: 'pointer'
-          }}
-        >
-          更新
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button 
+            onClick={() => fetchNews(false)}
+            style={{ 
+              backgroundColor: '#0066cc', 
+              color: 'white', 
+              padding: '10px 20px', 
+              border: 'none', 
+              borderRadius: '5px',
+              cursor: 'pointer'
+            }}
+          >
+            更新 (NewsAPI)
+          </button>
+          <button 
+            onClick={() => fetchNews(true)}
+            style={{ 
+              backgroundColor: '#ff6600', 
+              color: 'white', 
+              padding: '10px 20px', 
+              border: 'none', 
+              borderRadius: '5px',
+              cursor: 'pointer'
+            }}
+          >
+            代替API試行
+          </button>
+        </div>
       </div>
 
       <div>
@@ -68,9 +93,16 @@ export default function Home() {
                 >
                   {article.title}
                 </a>
-                <p style={{ color: '#666', fontSize: '12px', margin: '5px 0 0 0' }}>
-                  {new Date(article.publishedAt).toLocaleString('ja-JP')}
-                </p>
+                <div style={{ fontSize: '12px', margin: '5px 0 0 0' }}>
+                  <p style={{ color: '#666', margin: '2px 0' }}>
+                    {new Date(article.publishedAt).toLocaleString('ja-JP')}
+                  </p>
+                  {article.debugInfo && (
+                    <p style={{ color: '#999', margin: '2px 0' }}>
+                      {article.debugInfo.hoursAgo}時間前の記事 | {article.source}
+                    </p>
+                  )}
+                </div>
               </li>
             ))}
           </ul>
