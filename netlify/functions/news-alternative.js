@@ -26,11 +26,10 @@ exports.handler = async (event, context) => {
   try {
     const params = new URLSearchParams({
       apikey: NEWSDATA_API_KEY,
-      q: '人工知能 OR AI OR ChatGPT OR OpenAI OR "機械学習" OR "ディープラーニング" OR Google OR Microsoft',
-      language: 'jp',
-      country: 'jp',
+      q: 'AI OR ChatGPT OR OpenAI OR "人工知能" OR "機械学習"',
+      language: 'en,jp',
       category: 'technology,business',
-      size: 15
+      size: 10
     });
 
     const response = await fetch(`${NEWSDATA_API_URL}?${params}`);
@@ -44,14 +43,8 @@ exports.handler = async (event, context) => {
     console.log('NewsData.io Status:', data.status);
     console.log('Results Count:', data.results?.length);
     
-    // 日本語AI関連キーワードでフィルタリング
-    const aiKeywords = [
-      'AI', '人工知能', 'ChatGPT', 'OpenAI', 'Google', 'Microsoft', 'Meta',
-      '機械学習', 'ディープラーニング', 'Claude', 'Gemini', 'GPT', 'LLM',
-      '生成AI', '対話AI', 'ロボット', '自動化', 'デジタル変換', 'DX',
-      'ソフトバンク', 'NTT', 'トヨタ', '富士通', 'NEC', 'パナソニック',
-      'IT企業', 'テック企業', 'スタートアップ', 'イノベーション', 'テクノロジー'
-    ];
+    // AI関連キーワードでフィルタリング
+    const aiKeywords = ['AI', 'ChatGPT', 'OpenAI', 'Google', 'Microsoft', 'artificial intelligence', 'machine learning', 'neural network'];
     
     const articles = data.results
       ?.filter(article => {

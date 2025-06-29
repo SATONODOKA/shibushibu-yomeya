@@ -30,11 +30,10 @@ exports.handler = async (event, context) => {
 
   try {
     const params = new URLSearchParams({
-      q: '人工知能 OR AI OR ChatGPT OR OpenAI OR Google OR Microsoft OR "機械学習" OR "ディープラーニング" OR Claude OR Gemini',
+      q: '(AI OR "人工知能" OR "機械学習" OR "ChatGPT" OR "OpenAI" OR "Gemini" OR "Claude") AND -sport AND -music AND -game',
       sortBy: 'publishedAt',
       pageSize: '15',
-      language: 'jp',
-      country: 'jp',
+      language: 'en',
       apiKey: API_KEY
     });
 
@@ -50,14 +49,8 @@ exports.handler = async (event, context) => {
     console.log('Total Results:', data.totalResults);
     console.log('Articles Count:', data.articles?.length);
     
-    // 日本語AI関連キーワードでフィルタリング
-    const aiKeywords = [
-      'AI', '人工知能', 'ChatGPT', 'OpenAI', 'Google', 'Microsoft', 'Meta', 
-      '機械学習', 'ディープラーニング', 'Claude', 'Gemini', 'GPT', 'LLM',
-      '生成AI', '対話AI', 'ロボット', '自動化', 'デジタル変換', 'DX',
-      'ソフトバンク', 'NTT', 'トヨタ', '富士通', 'NEC', 'パナソニック',
-      'IT企業', 'テック企業', 'スタートアップ', 'イノベーション'
-    ];
+    // AI関連キーワードでさらにフィルタリング
+    const aiKeywords = ['AI', '人工知能', 'ChatGPT', 'OpenAI', 'Google', 'Microsoft', 'Meta', '機械学習', 'ディープラーニング', 'Claude', 'Gemini', 'GPT', 'LLM', 'neural', 'algorithm'];
     
     const articles = data.articles
       .filter(article => {
