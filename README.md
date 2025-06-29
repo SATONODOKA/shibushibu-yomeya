@@ -31,7 +31,7 @@ npm run dev
 
 ### Netlifyデプロイ
 1. GitHubリポジトリをNetlifyに接続
-2. ビルドコマンド: `npm run build && npm run export`
+2. ビルドコマンド: `npm run build`
 3. 公開ディレクトリ: `out`
 4. 自動デプロイが実行されます
 
