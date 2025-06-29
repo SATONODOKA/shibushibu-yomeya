@@ -6,11 +6,24 @@ export default function Home() {
   const [articles, setArticles] = useState([]);
 
   const fetchNews = async () => {
-    const response = await fetch('/api/news');
-    const data = await response.json();
-    
-    if (data.success && data.articles) {
-      setArticles(data.articles);
+    try {
+      const response = await fetch('/api/news');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.success && data.articles) {
+        setArticles(data.articles);
+      } else {
+        console.error('API Error:', data.error);
+        setArticles([]);
+      }
+    } catch (error) {
+      console.error('Fetch Error:', error);
+      setArticles([]);
     }
   };
 

@@ -20,6 +20,10 @@ yarn-error.log*
 # Vercel
 .vercel
 
+# Netlify
+.netlify/
+out/
+
 # IDE
 .vscode/
 .idea/
